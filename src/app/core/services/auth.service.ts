@@ -12,12 +12,19 @@ export class AuthService {
   login(data: LoginRequest) {
     return this.http.post<LoginResponse>(`${this.baseUrl}/login`, data);
   }
+
   saveToken(token: string) {
     return localStorage.setItem('access_token', token);
   }
-  getToken(){
+
+  getToken(): string | null {
     return localStorage.getItem('access_token');
   }
+
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+  
   logout() {
     localStorage.removeItem('access_token');
   }

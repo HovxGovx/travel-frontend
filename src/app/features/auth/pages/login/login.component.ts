@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +14,7 @@ export class LoginComponent {
   email: string = '';
   password: string = '';
   error: string = '';
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   onLogin() {
     const data = {
@@ -24,7 +25,9 @@ export class LoginComponent {
     this.authService.login(data).subscribe({
       next: (res) => {
         this.authService.saveToken(res.access_token);
+
         console.log('Login successful, token saved:', res.access_token);
+        this.router.navigate(['/dashboard']);
       },
       error: () => {
         this.error = 'Login failed. Please check your credentials and try again.';

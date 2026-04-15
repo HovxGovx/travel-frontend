@@ -1,11 +1,17 @@
 <h2>Login</h2>
 
-<input type="email" [(ngModel)]="email" placeholder="Email">
-<br><br>
 
-<input type="password" [(ngModel)]="password" placeholder="Password">
-<br><br>
+<p style="color:red"></p>
 
-<button (click)="onLogin()">Se connecter</button>
-
-<p style="color:red">{{ error }}</p>
+<form class="form">
+  <span class="input-span">
+    <label for="email" class="label">Email</label>
+    <input type="email" name="email" id="email" [(ngModel)]="email"
+  /></span>
+  <span class="input-span">
+    <label for="password" class="label">Password</label>
+    <input type="password" name="password" id="password" [(ngModel)]="password"
+  /></span>
+  <span class="span" style="color:red"><a href="#">{{ error }}</a></span>
+  <input class="submit" type="submit" value="Log in" (click)="onLogin()"/>
+</form>
