@@ -1,17 +1,28 @@
-<h2>Login</h2>
+<div class="login-container">
 
+  <div class="login-card">
 
-<p style="color:red"></p>
+    <h1 class="title">Admin Login</h1>
+    <p class="subtitle">Connecte-toi pour accéder au dashboard</p>
 
-<form class="form">
-  <span class="input-span">
-    <label for="email" class="label">Email</label>
-    <input type="email" name="email" id="email" [(ngModel)]="email"
-  /></span>
-  <span class="input-span">
-    <label for="password" class="label">Password</label>
-    <input type="password" name="password" id="password" [(ngModel)]="password"
-  /></span>
-  <span class="span" style="color:red"><a href="#">{{ error }}</a></span>
-  <input class="submit" type="submit" value="Log in" (click)="onLogin()"/>
-</form>
+    <form (ngSubmit)="onLogin()">
+
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="email" name="email" placeholder="admin@email.com" required />
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" [(ngModel)]="password" name="password" placeholder="••••••••" required />
+      </div>
+
+      <button type="submit" class="btn-primary">
+        Se connecter
+      </button>
+
+    </form>
+
+  </div>
+
+</div>

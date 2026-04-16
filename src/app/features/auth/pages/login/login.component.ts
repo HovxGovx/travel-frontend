@@ -27,7 +27,7 @@ export class LoginComponent {
         this.authService.saveToken(res.access_token);
 
         console.log('Login successful, token saved:', res.access_token);
-        this.router.navigate(['/dashboard']);
+        this.router.navigateByUrl('/dashboard');
       },
       error: () => {
         this.error = 'Login failed. Please check your credentials and try again.';

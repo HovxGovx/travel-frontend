@@ -1,74 +1,70 @@
-/* From Uiverse.io by bociKond */
-.form {
-  --bg-light: #efefef;
-  --bg-dark: #707070;
-  --clr: #0032fa;
-  --clr-alpha: #9c9c9c60;
+.login-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #d1d5db;
+  font-family: Arial, sans-serif;
+}
+
+.login-card {
+  width: 360px;
+  padding: 30px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 5px;
+  color: #1f2937;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 25px;
+}
+
+.input-group {
+  margin-bottom: 15px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-  max-width: 300px;
 }
 
-.form .input-span {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+label {
+  font-size: 13px;
+  margin-bottom: 5px;
+  color: #374151;
 }
 
-.form input[type="email"],
-.form input[type="password"] {
-  border-radius: 0.5rem;
-  padding: 1rem 0.75rem;
+input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  transition: 0.2s;
+}
+
+input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+}
+
+.btn-primary {
   width: 100%;
+  padding: 10px;
+  background: #6366f1;
   border: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background-color: var(--clr-alpha);
-  outline: 2px solid var(--bg-dark);
-}
-
-.form input[type="email"]:focus,
-.form input[type="password"]:focus {
-  outline: 2px solid var(--clr);
-}
-
-.label {
-  align-self: flex-start;
-  color: var(--clr);
-  font-weight: 600;
-}
-
-.form .submit {
-  padding: 1rem 0.75rem;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: 3rem;
-  background-color: var(--bg-dark);
-  color: var(--bg-light);
-  border: none;
+  color: white;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 300ms;
-  font-weight: 600;
-  font-size: 0.9rem;
+  transition: 0.2s;
+  margin-top: 10px;
 }
 
-.form .submit:hover {
-  background-color: var(--clr);
-  color: var(--bg-dark);
-}
-
-.span {
-  text-decoration: none;
-  color: var(--bg-dark);
-}
-
-.span a {
-  color: var(--clr);
+.btn-primary:hover {
+  background: #4f46e5;
 }
