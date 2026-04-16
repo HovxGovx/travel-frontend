@@ -7,7 +7,6 @@
     <nav>
       <a routerLink="/dashboard">Dashboard</a>
       <a routerLink="/activities">Activities</a>
-      <a routerLink="/users">Users</a>
     </nav>
   </aside>
 
@@ -16,9 +15,17 @@
 
     <!-- TOPBAR -->
     <header class="topbar">
-      <span>Welcome Admin</span>
+      <div class="left">
+        <span *ngIf="user">
+          {{ user.name }}
+        </span>
+      </div>
+      <div class="right">
 
-      <button (click)="logout()">Logout</button>
+
+        <button (click)="logout()">Logout</button>
+      </div>
+
     </header>
 
     <!-- CONTENT -->

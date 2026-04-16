@@ -21,19 +21,11 @@ export class LoginComponent {
       email: this.email,
       password: this.password
     };
-
     this.authService.login(data).subscribe({
       next: (res) => {
-        this.authService.saveToken(res.access_token);
-
-        console.log('Login successful, token saved:', res.access_token);
-        this.router.navigateByUrl('/dashboard');
-      },
-      error: () => {
-        this.error = 'Login failed. Please check your credentials and try again.';
+        this.authService.loadUser();
+        this.router.navigate(['/dashboard']);
       }
-    }
-
-    );
+    });
   }
 }
