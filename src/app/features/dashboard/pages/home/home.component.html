@@ -19,7 +19,7 @@
         <span>March 13</span>
       </div>
 
-      <span class="temp">23</span>
+      <span class="temp">{{ stats.activities}}</span>
 
     </div>
     <!-- From Uiverse.io  -->
@@ -29,11 +29,11 @@
       </div>
 
       <div class="card-header">
-        <span>Activités<br></span>
+        <span>Utilisateur<br></span>
         <span>March 13</span>
       </div>
 
-      <span class="temp">23</span>
+      <span class="temp">{{ stats.users || 0}}</span>
 
     </div>
 
@@ -42,10 +42,10 @@
       <div class="container">
       </div>
       <div class="card-header">
-        <span>Activités<br></span>
+        <span>Villes<br></span>
         <span>March 13</span>
       </div>
-      <span class="temp">23</span>
+      <span class="temp">{{ stats.cities}}</span>
     </div>
     <div class="card">
       <div class="container">
@@ -54,7 +54,7 @@
         <span>Plan generes<br></span>
         <span>March 13</span>
       </div>
-      <span class="temp">23</span>
+      <span class="temp">{{ stats.plans}}</span>
     </div>
   </div>
 </div>

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class DashboardService {
-  private apiUrl = 'http://localhost:8000';
+  private apiUrl = 'http://localhost:8000/admin';
   constructor(private http: HttpClient) {  }
 
   getStats(): Observable<any> {
