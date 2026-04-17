@@ -1,61 +1,232 @@
-<div class="activities-page">
+<div class="page">
 
+  <!-- Header -->
   <div class="page-header">
-    <h1>Gestion des Activités</h1>
-    <p>Liste complète des activités touristiques</p>
+    <div class="page-title">
+      <span class="title-icon">🎯</span>
+      <div>
+        <h1>Activités</h1>
+        <p>{{ filteredActivities.length }} activité(s) trouvée(s)</p>
+      </div>
+    </div>
+    <button class="btn-primary" (click)="openCreate()">
+      <span>+</span> Nouvelle activité
+    </button>
   </div>
 
-  <!-- LOADING -->
-  <div *ngIf="loading">
-    Chargement des activités...
+  <!-- Filtres -->
+  <div class="filters-bar">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        placeholder="Rechercher par nom ou ID..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="applyFilters()"
+      />
+      <button *ngIf="searchTerm" class="clear-btn" (click)="searchTerm=''; applyFilters()">×</button>
+    </div>
+
+    <select [(ngModel)]="selectedCity" (ngModelChange)="applyFilters()">
+      <option value="">Toutes les villes</option>
+      <option *ngFor="let city of cities" [value]="city.id">{{ city.name }}</option>
+    </select>
+
+    <select [(ngModel)]="selectedCategory" (ngModelChange)="applyFilters()">
+      <option value="">Toutes les catégories</option>
+      <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+    </select>
+
+    <select [(ngModel)]="selectedTag" (ngModelChange)="applyFilters()">
+      <option value="">Tous les tags</option>
+      <option *ngFor="let tag of tags" [value]="tag.name">{{ tag.name }}</option>
+    </select>
+
+    <button class="btn-ghost" (click)="clearFilters()">Réinitialiser</button>
   </div>
 
-  <!-- ERROR -->
-  <div *ngIf="error">
-    {{ error }}
+  <!-- Loading -->
+  <div class="loading" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <span>Chargement...</span>
   </div>
 
-  <!-- TABLE -->
-  <table *ngIf="!loading && activities.length > 0">
-
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nom</th>
-        <th>Ville</th>
-        <th>Coût</th>
-        <th>Durée</th>
-        <th>Catégorie</th>
-        <th>Tags</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr *ngFor="let activity of activities">
-
-        <td>{{ activity.id }}</td>
-        <td>{{ activity.name }}</td>
-        <td>{{ activity.city_id }}</td>
-        <td>{{ activity.cost }} Ar</td>
-        <td>{{ activity.duration }} h</td>
-        <td>{{ activity.category }}</td>
-        <td>{{ activity.tags.join(', ') }}</td>
-
-        <td>
-          <button (click)="deleteActivity(activity.id)">
-            Supprimer
-          </button>
-        </td>
-
-      </tr>
-    </tbody>
-
-  </table>
-
-  <!-- EMPTY -->
-  <div *ngIf="!loading && activities.length === 0">
-    Aucune activité trouvée.
+  <!-- Table -->
+  <div class="table-container" *ngIf="!isLoading">
+    <table>
+      <thead>
+        <tr>
+          <th (click)="sort('id')" class="sortable">
+            ID <span class="sort-icon">{{ sortColumn === 'id' ? (sortAsc ? '↑' : '↓') : '↕' }}</span>
+          </th>
+          <th (click)="sort('name')" class="sortable">
+            Nom <span class="sort-icon">{{ sortColumn === 'name' ? (sortAsc ? '↑' : '↓') : '↕' }}</span>
+          </th>
+          <th (click)="sort('city_id')" class="sortable">
+            Ville <span class="sort-icon">{{ sortColumn === 'city_id' ? (sortAsc ? '↑' : '↓') : '↕' }}</span>
+          </th>
+          <th (click)="sort('category')" class="sortable">
+            Catégorie <span class="sort-icon">{{ sortColumn === 'category' ? (sortAsc ? '↑' : '↓') : '↕' }}</span>
+          </th>
+          <th (click)="sort('cost')" class="sortable">
+            Coût <span class="sort-icon">{{ sortColumn === 'cost' ? (sortAsc ? '↑' : '↓') : '↕' }}</span>
+          </th>
+          <th (click)="sort('duration')" class="sortable">
+            Durée <span class="sort-icon">{{ sortColumn === 'duration' ? (sortAsc ? '↑' : '↓') : '↕' }}</span>
+          </th>
+          <th>Tags</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let activity of paginatedActivities" class="table-row">
+          <td class="id-cell">#{{ activity.id }}</td>
+          <td class="name-cell">{{ activity.name }}</td>
+          <td>
+            <span class="city-badge">{{ getCityName(activity.city_id) }}</span>
+          </td>
+          <td>
+            <span class="category-badge cat-{{ activity.category }}">{{ activity.category }}</span>
+          </td>
+          <td class="cost-cell">{{ formatCost(activity.cost) }}</td>
+          <td>{{ activity.duration }}h</td>
+          <td>
+            <div class="tags-cell">
+              <span class="tag-pill" *ngFor="let tag of activity.tags?.slice(0, 3) ?? []">{{ tag }}</span>
+              <span class="tag-more" *ngIf="(activity.tags?.length ?? 0) > 3">+{{ (activity.tags?.length ?? 0) - 3 }}</span>
+            </div>
+          </td>
+          <td>
+            <div class="actions">
+              <button class="btn-icon edit" (click)="openEdit(activity)" title="Modifier">✏️</button>
+              <button class="btn-icon scores" (click)="openScores(activity)" title="Scores plaisir">📊</button>
+              <button class="btn-icon delete" (click)="delete(activity)" title="Supprimer">🗑️</button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="paginatedActivities.length === 0">
+          <td colspan="8" class="empty-state">
+            <span>🔍</span>
+            <p>Aucune activité trouvée</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button class="page-btn" [disabled]="currentPage === 1" (click)="currentPage = currentPage - 1">←</button>
+    <button
+      class="page-btn"
+      *ngFor="let page of pages"
+      [class.active]="page === currentPage"
+      (click)="currentPage = page"
+    >{{ page }}</button>
+    <button class="page-btn" [disabled]="currentPage === totalPages" (click)="currentPage = currentPage + 1">→</button>
+    <span class="page-info">Page {{ currentPage }} / {{ totalPages }}</span>
+  </div>
+
+</div>
+
+<!-- Modal Créer / Modifier -->
+<div class="modal-overlay" *ngIf="showModal" (click)="showModal = false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ isEditing ? 'Modifier' : 'Nouvelle' }} activité</h2>
+      <button class="modal-close" (click)="showModal = false">×</button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="modal-body">
+      <div class="form-grid">
+
+        <div class="form-group full">
+          <label>Nom de l'activité *</label>
+          <input type="text" formControlName="name" placeholder="Ex: Parc Ranomafana" />
+        </div>
+
+        <div class="form-group">
+          <label>Ville *</label>
+          <select formControlName="city_id">
+            <option value="">Choisir une ville</option>
+            <option *ngFor="let city of cities" [value]="city.id">{{ city.name }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Catégorie *</label>
+          <select formControlName="category">
+            <option value="">Choisir</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Coût (Ar) *</label>
+          <input type="number" formControlName="cost" min="0" placeholder="0" />
+        </div>
+
+        <div class="form-group">
+          <label>Durée (heures) *</label>
+          <input type="number" formControlName="duration" min="0.5" step="0.5" placeholder="2" />
+        </div>
+
+        <div class="form-group full">
+          <label>Tags</label>
+          <div class="tags-selector">
+            <button
+              type="button"
+              class="tag-toggle"
+              *ngFor="let tag of tags"
+              [class.selected]="isTagSelected(tag.id)"
+              (click)="toggleTag(tag.id)"
+            >{{ tag.name }}</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" (click)="showModal = false">Annuler</button>
+        <button type="submit" class="btn-primary" [disabled]="form.invalid">
+          {{ isEditing ? 'Enregistrer' : 'Créer' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Scores plaisir -->
+<div class="modal-overlay" *ngIf="showScoresModal" (click)="showScoresModal = false">
+  <div class="modal modal-scores" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Scores plaisir — {{ selectedActivity?.name }}</h2>
+      <button class="modal-close" (click)="showScoresModal = false">×</button>
+    </div>
+
+    <form [formGroup]="scoresForm" (ngSubmit)="saveScores()" class="modal-body">
+      <p class="scores-hint">Attribuez un score de 0 à 10 pour chaque type de voyage.</p>
+
+      <div class="scores-grid">
+        <div class="score-item" *ngFor="let type of tripTypes">
+          <label>
+            <span class="score-emoji">
+              {{ type === 'nature' ? '🌿' : type === 'culture' ? '🏛️' : type === 'aventure' ? '🧗' :
+                 type === 'gastronomie' ? '🍽️' : type === 'famille' ? '👨‍👩‍👧' : type === 'plage' ? '🏖️' : '💎' }}
+            </span>
+            {{ type }}
+          </label>
+          <div class="score-input-row">
+            <input type="range" [formControlName]="type" min="0" max="10" step="1" />
+            <span class="score-value">{{ scoresForm.get(type)?.value }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" (click)="showScoresModal = false">Annuler</button>
+        <button type="submit" class="btn-primary">Enregistrer les scores</button>
+      </div>
+    </form>
+  </div>
 </div>
