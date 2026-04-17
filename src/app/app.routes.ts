@@ -27,12 +27,6 @@ export const routes: Routes = [
             .then(m => m.ActivitiesComponent)
       }
     ]
-  },
-  {
-    path: 'dashboard/activities',
-    loadComponent: () =>
-      import('./features/dashboard/pages/activities/activities.component')
-        .then(m => m.ActivitiesComponent)
   }
 
 ];

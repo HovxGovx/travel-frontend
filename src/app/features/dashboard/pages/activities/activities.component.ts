@@ -1,57 +1,33 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-
-interface Tag {
-  id: number;
-  name: string;
-}
-
-interface Activity {
-  id: number;
-  name: string;
-  city_id: number;
-  city_name?: string;
-  cost: number;
-  duration: number;
-  category: string;
-  tags: string[];
-  pleasure_scores: { [key: string]: number };
-}
-
-interface City {
-  id: number;
-  name: string;
-  region: string;
-}
+import { ActivityService, Activity, City, Tag } from '../../../../core/services/activity.service';
 
 @Component({
   selector: 'app-activities',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './activities.component.html',
-  styleUrls: ['./activities.component.css']
+  styleUrls: ['./activities.component.scss']
 })
 export class ActivitiesComponent implements OnInit {
-  private apiUrl = 'http://localhost:8000';
 
-  activities: Activity[]     = [];
+  activities:         Activity[] = [];
   filteredActivities: Activity[] = [];
-  cities: City[]             = [];
-  tags: Tag[]                = [];
+  cities:             City[]     = [];
+  tags:               Tag[]      = [];
 
   // Filtres
-  searchTerm     = '';
-  selectedCity   = '';
+  searchTerm       = '';
+  selectedCity     = '';
   selectedCategory = '';
-  selectedTag    = '';
+  selectedTag      = '';
 
   // UI state
-  showModal      = false;
+  showModal       = false;
   showScoresModal = false;
-  isEditing      = false;
-  isLoading      = false;
+  isEditing       = false;
+  isLoading       = false;
   selectedActivity: Activity | null = null;
 
   // Tri
@@ -59,16 +35,19 @@ export class ActivitiesComponent implements OnInit {
   sortAsc    = true;
 
   // Pagination
-  currentPage  = 1;
-  pageSize     = 10;
+  currentPage = 1;
+  pageSize    = 10;
 
   categories = ['culture', 'nature', 'aventure', 'gastronomie'];
   tripTypes  = ['nature', 'culture', 'aventure', 'gastronomie', 'famille', 'plage', 'luxe'];
 
-  form: FormGroup;
+  form:       FormGroup;
   scoresForm: FormGroup;
 
-  constructor(private http: HttpClient, private fb: FormBuilder) {
+  constructor(
+    private activityService: ActivityService,
+    private fb: FormBuilder
+  ) {
     this.form = this.fb.group({
       name:     ['', Validators.required],
       city_id:  ['', Validators.required],
@@ -93,31 +72,25 @@ export class ActivitiesComponent implements OnInit {
     this.loadAll();
   }
 
-  get headers() {
-    const token = localStorage.getItem('token');
-    return new HttpHeaders({ Authorization: `Bearer ${token}` });
-  }
-
   loadAll() {
     this.isLoading = true;
-    this.http.get<City[]>(`${this.apiUrl}/admin/cities`, { headers: this.headers })
-      .subscribe(cities => { this.cities = cities; });
 
-    this.http.get<Tag[]>(`${this.apiUrl}/admin/tags`, { headers: this.headers })
-      .subscribe(tags => { this.tags = tags; });
+    this.activityService.getCities().subscribe(cities => {
+      this.cities = cities;
 
-    this.http.get<Activity[]>(`${this.apiUrl}/admin/activities`, { headers: this.headers })
-      .subscribe({
-        next: acts => {
-          this.activities = acts.map(a => ({
-            ...a,
-            city_name: this.cities.find(c => c.id === a.city_id)?.name || '—'
-          }));
-          this.applyFilters();
-          this.isLoading = false;
-        },
-        error: () => { this.isLoading = false; }
+      this.activityService.getTags().subscribe(tags => {
+        this.tags = tags;
+
+        this.activityService.getActivities().subscribe({
+          next: activities => {
+            this.activities = activities;
+            this.applyFilters();
+            this.isLoading = false;
+          },
+          error: () => { this.isLoading = false; }
+        });
       });
+    });
   }
 
   applyFilters() {
@@ -140,7 +113,6 @@ export class ActivitiesComponent implements OnInit {
     if (this.selectedTag)
       result = result.filter(a => a.tags?.includes(this.selectedTag));
 
-    // Tri
     result.sort((a, b) => {
       const valA = (a as any)[this.sortColumn];
       const valB = (b as any)[this.sortColumn];
@@ -189,16 +161,16 @@ export class ActivitiesComponent implements OnInit {
 
   openScores(activity: Activity) {
     this.selectedActivity = activity;
-    this.scoresForm.patchValue(activity.pleasure_scores || {});
+    this.scoresForm.patchValue(activity.pleasure_scores ?? {});
     this.showScoresModal = true;
   }
 
   isTagSelected(tagId: number): boolean {
-    return (this.form.get('tag_ids')?.value || []).includes(tagId);
+    return (this.form.get('tag_ids')?.value ?? []).includes(tagId);
   }
 
   toggleTag(tagId: number) {
-    const current: number[] = this.form.get('tag_ids')?.value || [];
+    const current: number[] = this.form.get('tag_ids')?.value ?? [];
     const updated = current.includes(tagId)
       ? current.filter(id => id !== tagId)
       : [...current, tagId];
@@ -210,39 +182,36 @@ export class ActivitiesComponent implements OnInit {
     const payload = this.form.value;
 
     if (this.isEditing && this.selectedActivity) {
-      this.http.patch(`${this.apiUrl}/admin/activities/${this.selectedActivity.id}`, payload, { headers: this.headers })
+      this.activityService.updateActivity(this.selectedActivity.id, payload)
         .subscribe(() => { this.showModal = false; this.loadAll(); });
     } else {
-      this.http.post(`${this.apiUrl}/admin/activities`, payload, { headers: this.headers })
+      this.activityService.createActivity(payload)
         .subscribe(() => { this.showModal = false; this.loadAll(); });
     }
   }
 
   saveScores() {
     if (!this.selectedActivity) return;
-    this.http.patch(
-      `${this.apiUrl}/admin/activities/${this.selectedActivity.id}/scores`,
-      { pleasure_scores: this.scoresForm.value },
-      { headers: this.headers }
-    ).subscribe(() => { this.showScoresModal = false; this.loadAll(); });
+    this.activityService.updateScores(this.selectedActivity.id, this.scoresForm.value)
+      .subscribe(() => { this.showScoresModal = false; this.loadAll(); });
   }
 
   delete(activity: Activity) {
     if (!confirm(`Supprimer "${activity.name}" ?`)) return;
-    this.http.delete(`${this.apiUrl}/admin/activities/${activity.id}`, { headers: this.headers })
+    this.activityService.deleteActivity(activity.id)
       .subscribe(() => this.loadAll());
   }
 
   clearFilters() {
-    this.searchTerm = '';
-    this.selectedCity = '';
+    this.searchTerm      = '';
+    this.selectedCity    = '';
     this.selectedCategory = '';
-    this.selectedTag = '';
+    this.selectedTag     = '';
     this.applyFilters();
   }
 
   getCityName(id: number): string {
-    return this.cities.find(c => c.id === id)?.name || '—';
+    return this.cities.find(c => c.id === id)?.name ?? '—';
   }
 
   formatCost(cost: number): string {
