@@ -3,58 +3,34 @@
   <!-- HEADER -->
   <div class="header">
     <h1>Dashboard</h1>
-    <p *ngIf="user">Bienvenue, {{ user.name }} </p>
   </div>
-
+  <div class="loading" *ngIf="loading">
+    Chargements des statistiques...
+  </div>
+  <!-- ERROR -->
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
   <!-- STATS -->
-  <div class="stats">
+  <div class="stats" *ngIf="!loading && stats">
 
-    <div class="card">
-      <div class="container">
-
-      </div>
-
-      <div class="card-header">
-        <span>Activités<br></span>
-        <span>March 13</span>
-      </div>
-
-      <span class="temp">{{ stats.activities}}</span>
-
-    </div>
-    <!-- From Uiverse.io  -->
-    <div class="card">
-      <div class="container">
-
-      </div>
+    <div
+      class="card"
+      *ngFor="let card of dashboardCards"
+      (click)="goTo(card.key)"
+    >
+      <div class="container"></div>
 
       <div class="card-header">
-        <span>Utilisateur<br></span>
-        <span>March 13</span>
+        <span>{{ card.title }}</span>
+        <span></span>
       </div>
 
-      <span class="temp">{{ stats.users || 0}}</span>
+      <span class="temp">
+         {{ stats[card.key] || 0 }}
+      </span>
 
     </div>
 
-
-    <div class="card">
-      <div class="container">
-      </div>
-      <div class="card-header">
-        <span>Villes<br></span>
-        <span>March 13</span>
-      </div>
-      <span class="temp">{{ stats.cities}}</span>
-    </div>
-    <div class="card">
-      <div class="container">
-      </div>
-      <div class="card-header">
-        <span>Plan generes<br></span>
-        <span>March 13</span>
-      </div>
-      <span class="temp">{{ stats.plans}}</span>
-    </div>
   </div>
 </div>

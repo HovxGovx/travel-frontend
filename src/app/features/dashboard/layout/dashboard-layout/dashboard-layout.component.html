@@ -2,37 +2,59 @@
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <h2>Admin Panel</h2>
 
-    <nav>
-      <a routerLink="/dashboard">Dashboard</a>
-      <a routerLink="/activities">Activities</a>
+    <div class="logo">
+      <h2>Travel Admin</h2>
+    </div>
+
+    <nav class="menu">
+
+      <a routerLink="/dashboard"
+         routerLinkActive="active"
+         [routerLinkActiveOptions]="{ exact: true }">
+        Dashboard
+      </a>
+
+      <a routerLink="/dashboard/activities"
+         routerLinkActive="active">
+        Activités
+      </a>
+
+      <a routerLink="/dashboard/cities"
+         routerLinkActive="active">
+        Villes
+      </a>
+
+      <a routerLink="/dashboard/hotels"
+         routerLinkActive="active">
+        Hôtels
+      </a>
+
+      <a routerLink="/dashboard/restaurants"
+         routerLinkActive="active">
+        Restaurants
+      </a>
+
+      <a routerLink="/dashboard/transports"
+         routerLinkActive="active">
+        Transports
+      </a>
+
     </nav>
+
   </aside>
 
-  <!-- MAIN -->
-  <div class="main">
+  <!-- MAIN CONTENT -->
+  <main class="main">
 
-    <!-- TOPBAR -->
     <header class="topbar">
-      <div class="left">
-        <span *ngIf="user">
-          {{ user.name }}
-        </span>
-      </div>
-      <div class="right">
-
-
-        <button (click)="logout()">Logout</button>
-      </div>
-
+      <div>Bienvenue Admin</div>
     </header>
 
-    <!-- CONTENT -->
     <section class="content">
       <router-outlet></router-outlet>
     </section>
 
-  </div>
+  </main>
 
 </div>

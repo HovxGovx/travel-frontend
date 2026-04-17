@@ -20,6 +20,19 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path:'', component: HomeComponent },
+      {
+        path: 'activities',
+        loadComponent: () =>
+          import('./features/dashboard/pages/activities/activities.component')
+            .then(m => m.ActivitiesComponent)
+      }
     ]
+  },
+  {
+    path: 'dashboard/activities',
+    loadComponent: () =>
+      import('./features/dashboard/pages/activities/activities.component')
+        .then(m => m.ActivitiesComponent)
   }
+
 ];
