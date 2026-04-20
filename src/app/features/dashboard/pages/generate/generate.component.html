@@ -1,0 +1,315 @@
+<div class="page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-title">
+      <span class="title-icon">🧬</span>
+      <div>
+        <h1>Générateur de voyage</h1>
+        <p>Algorithme génétique — optimisation multi-objectif</p>
+      </div>
+    </div>
+    <button class="btn-ghost" (click)="showHistory = !showHistory">
+      {{ showHistory ? 'Masquer' : 'Voir' }} l'historique ({{ trips.length }})
+    </button>
+  </div>
+
+  <div class="main-layout" [class.with-history]="showHistory">
+
+    <!-- Colonne gauche — Formulaire -->
+    <div class="form-panel">
+
+      <!-- Steps indicator -->
+      <div class="steps-indicator" *ngIf="!generatedTrip && !isGenerating">
+        <div class="step-item"
+          *ngFor="let s of [1,2,3]"
+          [class.active]="currentStep === s"
+          [class.done]="currentStep > s"
+          (click)="goToStep(s)">
+          <div class="step-circle">
+            <span *ngIf="currentStep <= s">{{ s }}</span>
+            <span *ngIf="currentStep > s">✓</span>
+          </div>
+          <span class="step-label">
+            {{ s === 1 ? 'Votre voyage' : s === 2 ? 'Préférences' : 'Résumé' }}
+          </span>
+        </div>
+        <div class="steps-line"></div>
+      </div>
+
+      <!-- ── STEP 1 ── -->
+      <div class="step-content" *ngIf="currentStep === 1 && !isGenerating && !generatedTrip">
+        <h2 class="step-title">Votre voyage idéal</h2>
+
+        <form [formGroup]="step1">
+
+          <!-- Budget -->
+          <div class="form-group">
+            <label>Budget total</label>
+            <div class="input-with-unit">
+              <input type="number" formControlName="budget" min="50000" step="10000" />
+              <span class="unit">Ar</span>
+            </div>
+            <p class="hint">{{ formatCost(step1.value.budget) }}</p>
+          </div>
+
+          <!-- Durée -->
+          <div class="form-group">
+            <label>Durée du voyage</label>
+            <div class="duration-slider">
+              <input type="range" formControlName="duration" min="1" max="30" step="1" />
+              <span class="duration-value">{{ step1.value.duration }} jour(s)</span>
+            </div>
+          </div>
+
+          <!-- Type de voyage -->
+          <div class="form-group">
+            <label>Type de voyage *</label>
+            <div class="type-grid">
+              <button
+                type="button"
+                class="type-card"
+                *ngFor="let type of tripTypes"
+                [class.selected]="step1.value.trip_type === type.value"
+                (click)="selectTripType(type.value)">
+                <span class="type-emoji">{{ type.emoji }}</span>
+                <span class="type-label">{{ type.label }}</span>
+              </button>
+            </div>
+          </div>
+
+        </form>
+
+        <div class="step-actions">
+          <div></div>
+          <button class="btn-primary" (click)="nextStep()" [disabled]="step1.invalid">
+            Suivant →
+          </button>
+        </div>
+      </div>
+
+      <!-- ── STEP 2 ── -->
+      <div class="step-content" *ngIf="currentStep === 2 && !isGenerating && !generatedTrip">
+        <h2 class="step-title">Préférences d'optimisation</h2>
+
+        <form [formGroup]="step2">
+
+          <!-- Mode d'optimisation -->
+          <div class="form-group">
+            <label>L'algorithme doit prioritairement...</label>
+            <div class="optimize-grid">
+              <button
+                type="button"
+                class="optimize-card"
+                *ngFor="let mode of optimizeModes"
+                [class.selected]="step2.value.optimize_for === mode.value"
+                (click)="selectOptimize(mode.value)">
+                <span class="opt-emoji">{{ mode.emoji }}</span>
+                <span class="opt-label">{{ mode.label }}</span>
+                <span class="opt-desc">{{ mode.desc }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Villes -->
+          <div class="form-group">
+            <label>Villes à visiter <span class="optional">(optionnel — vide = toutes)</span></label>
+            <div class="cities-grid">
+              <button
+                type="button"
+                class="city-card"
+                *ngFor="let city of cities"
+                [class.selected]="isCitySelected(city.name)"
+                (click)="toggleCity(city.name)">
+                <span class="city-name">{{ city.name }}</span>
+                <span class="city-region">{{ city.region }}</span>
+              </button>
+            </div>
+            <p class="hint" *ngIf="selectedCities.length > 0">
+              Sélectionnées : {{ selectedCities.join(', ') }}
+            </p>
+            <p class="hint" *ngIf="selectedCities.length === 0">
+              Toutes les villes seront considérées
+            </p>
+          </div>
+
+        </form>
+
+        <div class="step-actions">
+          <button class="btn-ghost" (click)="prevStep()">← Retour</button>
+          <button class="btn-primary" (click)="nextStep()">Résumé →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 3 — Résumé ── -->
+      <div class="step-content" *ngIf="currentStep === 3 && !isGenerating && !generatedTrip">
+        <h2 class="step-title">Résumé de votre demande</h2>
+
+        <div class="summary-card">
+          <div class="summary-row">
+            <span class="summary-icon">💰</span>
+            <div>
+              <span class="summary-label">Budget</span>
+              <span class="summary-value">{{ formatCost(summaryData.budget) }}</span>
+            </div>
+          </div>
+          <div class="summary-row">
+            <span class="summary-icon">📅</span>
+            <div>
+              <span class="summary-label">Durée</span>
+              <span class="summary-value">{{ summaryData.duration }} jour(s)</span>
+            </div>
+          </div>
+          <div class="summary-row">
+            <span class="summary-icon">{{ summaryData.trip_type?.emoji }}</span>
+            <div>
+              <span class="summary-label">Type</span>
+              <span class="summary-value">{{ summaryData.trip_type?.label }}</span>
+            </div>
+          </div>
+          <div class="summary-row">
+            <span class="summary-icon">{{ summaryData.optimize_for?.emoji }}</span>
+            <div>
+              <span class="summary-label">Optimisation</span>
+              <span class="summary-value">{{ summaryData.optimize_for?.label }}</span>
+            </div>
+          </div>
+          <div class="summary-row">
+            <span class="summary-icon">🗺️</span>
+            <div>
+              <span class="summary-label">Villes</span>
+              <span class="summary-value">
+                {{ summaryData.cities.length > 0 ? summaryData.cities.join(', ') : 'Toutes' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="algo-info">
+          <span class="algo-badge">🧬 Algorithme génétique</span>
+          <p>50 itinéraires évoluent sur 200 générations pour trouver la solution optimale selon vos critères.</p>
+        </div>
+
+        <div class="error-msg" *ngIf="errorMessage">⚠️ {{ errorMessage }}</div>
+
+        <div class="step-actions">
+          <button class="btn-ghost" (click)="prevStep()">← Retour</button>
+          <button class="btn-generate" (click)="generate()">
+            🚀 Lancer l'algorithme
+          </button>
+        </div>
+      </div>
+
+      <!-- ── PROGRESSION ── -->
+      <div class="progress-panel" *ngIf="isGenerating">
+        <div class="progress-header">
+          <span class="dna-icon">🧬</span>
+          <h2>Algorithme génétique en cours...</h2>
+        </div>
+
+        <div class="progress-bar-container">
+          <div class="progress-bar" [style.width.%]="progressValue">
+            <div class="progress-glow"></div>
+          </div>
+        </div>
+        <div class="progress-stats">
+          <span>{{ progressValue | number:'1.0-0' }}%</span>
+          <span>{{ progressLabel }}</span>
+        </div>
+
+        <div class="dna-animation">
+          <div class="dna-strand">
+            <div class="node" *ngFor="let n of [1,2,3,4,5,6,7,8]"
+              [style.animation-delay]="n * 0.1 + 's'"></div>
+          </div>
+        </div>
+
+        <p class="progress-hint">
+          L'AG fait évoluer 50 itinéraires sur 200 générations.<br/>
+          Chaque génération sélectionne les meilleurs et les fait "muter".
+        </p>
+      </div>
+
+      <!-- ── RÉSULTAT ── -->
+      <div class="result-panel" *ngIf="generatedTrip && !isGenerating">
+
+        <div class="result-header">
+          <div class="result-score">
+            <span class="score-label">Score optimal</span>
+            <span class="score-value" [style.color]="getScoreColor(generatedTrip.result?.score ?? 0)">
+              {{ ((generatedTrip.result?.score ?? 0) * 100) | number:'1.0-0' }}%
+            </span>
+          </div>
+          <div class="result-meta">
+            <span>💰 {{ formatCost(generatedTrip.result?.total_cost ?? 0) }}</span>
+            <span>📅 {{ generatedTrip.duration }} jours</span>
+            <span>{{ getTripTypeEmoji(generatedTrip.trip_type) }} {{ generatedTrip.trip_type }}</span>
+          </div>
+        </div>
+
+        <!-- Jours -->
+        <div class="days-container">
+          <div class="day-card" *ngFor="let day of generatedTrip.result?.days">
+            <div class="day-header">
+              <div class="day-number">Jour {{ day.day }}</div>
+              <div class="day-city">📍 {{ day.city }}</div>
+              <div class="day-cost">{{ formatCost(day.cost_day) }}</div>
+            </div>
+
+            <div class="day-transport" *ngIf="day.transport">
+              🚌 {{ day.transport }}
+            </div>
+
+            <div class="day-activities">
+              <div class="activity-item" *ngFor="let act of day.activities">
+                🎯 {{ act }}
+              </div>
+              <div class="no-activity" *ngIf="day.activities.length === 0">
+                Journée de déplacement
+              </div>
+            </div>
+
+            <div class="day-hotel" *ngIf="day.hotel">
+              🏨 {{ day.hotel }}
+            </div>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button class="btn-ghost" (click)="reset()">🔄 Nouveau voyage</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Colonne droite — Historique -->
+    <div class="history-panel" *ngIf="showHistory">
+      <h3 class="history-title">Historique</h3>
+
+      <div class="history-empty" *ngIf="trips.length === 0">
+        <span>🗺️</span>
+        <p>Aucun voyage généré</p>
+      </div>
+
+      <div class="history-card" *ngFor="let trip of trips">
+        <div class="history-header">
+          <span class="history-emoji">{{ getTripTypeEmoji(trip.trip_type) }}</span>
+          <div class="history-info">
+            <span class="history-type">{{ trip.trip_type }} — {{ getOptimizeLabel(trip.optimize_for) }}</span>
+            <span class="history-date">{{ formatDate(trip.created_at) }}</span>
+          </div>
+          <button class="btn-delete" (click)="deleteTrip(trip.id, $event)">🗑️</button>
+        </div>
+        <div class="history-stats">
+          <span>📅 {{ trip.duration }}j</span>
+          <!-- <span>💰 {{ formatCost(trip.result?.total_cost) }}</span> -->
+          <span>💰 {{ formatCost(trip.result?.total_cost ?? 0) }}</span>
+          <span [style.color]="getScoreColor(trip.score)">
+            ⭐ {{ (trip.score * 100) | number:'1.0-0' }}%
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

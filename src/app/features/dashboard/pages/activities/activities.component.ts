@@ -8,7 +8,7 @@ import { ActivityService, Activity, City, Tag } from '../../../../core/services/
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './activities.component.html',
-  styleUrls: ['./activities.component.scss']
+  styleUrls: ['./activities.component.css']
 })
 export class ActivitiesComponent implements OnInit {
 

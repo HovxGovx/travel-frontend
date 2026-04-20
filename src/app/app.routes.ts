@@ -25,8 +25,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/pages/activities/activities.component')
             .then(m => m.ActivitiesComponent)
+      },
+      {
+        path: 'generate',
+        loadComponent: () =>
+          import('./features/dashboard/pages/generate/generate.component')
+            .then(m => m.GenerateComponent)
       }
     ]
-  }
+  },
+
 
 ];
