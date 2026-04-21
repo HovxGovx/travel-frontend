@@ -9,36 +9,64 @@
 
     <nav class="menu">
 
-      <a routerLink="/dashboard"
-         routerLinkActive="active"
-         [routerLinkActiveOptions]="{ exact: true }">
+      <!-- PARENT -->
+      <div
+        class="menu-parent"
+        (click)="toggleMenu()">
         Dashboard
-      </a>
+        <span>{{ menuOpen ? '▼' : '▶' }}</span>
+      </div>
 
-      <a routerLink="/dashboard/activities"
-         routerLinkActive="active">
-        Activités
-      </a>
+      <!-- CHILDREN -->
+      <div
+        class="submenu"
+        *ngIf="menuOpen">
 
-      <a routerLink="/dashboard/cities"
-         routerLinkActive="active">
-        Villes
-      </a>
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }">
+          Vue générale
+        </a>
 
-      <a routerLink="/dashboard/hotels"
-         routerLinkActive="active">
-        Hôtels
-      </a>
+        <a
+          routerLink="/dashboard/activities"
+          routerLinkActive="active">
+          Activités
+        </a>
 
-      <a routerLink="/dashboard/restaurants"
-         routerLinkActive="active">
-        Restaurants
-      </a>
+        <a
+          routerLink="/dashboard/cities"
+          routerLinkActive="active">
+          Villes
+        </a>
 
-      <a routerLink="/dashboard/transports"
-         routerLinkActive="active">
-        Transports
+        <a
+          routerLink="/dashboard/hotels"
+          routerLinkActive="active">
+          Hôtels
+        </a>
+
+        <a
+          routerLink="/dashboard/restaurants"
+          routerLinkActive="active">
+          Restaurants
+        </a>
+
+        <a
+          routerLink="/dashboard/transports"
+          routerLinkActive="active">
+          Transports
+        </a>
+        <a
+        routerLink="/dashboard/generate"
+        routerLinkActive="active"
+      >
+        Generate
       </a>
+      </div>
+
+
 
     </nav>
 

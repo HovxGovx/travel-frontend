@@ -12,6 +12,13 @@ export interface DashboardStats {
   plans: number;
 }
 
+
+
+
+
+
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -24,4 +31,10 @@ export class AdminService {
   getStats(): Observable<DashboardStats> {
     return this.http.get<DashboardStats>(`${this.apiUrl}/stats`);
   }
+
+  // ── Transports ────────────────────────────────────────────────────────
+  
+
+
+
 }

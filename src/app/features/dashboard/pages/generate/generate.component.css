@@ -51,7 +51,7 @@
   &.with-history {
     grid-template-columns: 1fr 320px;
   }
-  
+
 }
 
 /* // ── Steps indicator ─────────────────────────────────────────────────────── */

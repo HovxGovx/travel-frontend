@@ -12,6 +12,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 })
 export class DashboardLayoutComponent implements OnInit{
   user: any;
+  menuOpen = true;
   constructor(private authService: AuthService) { }
   ngOnInit(): void {
     this.authService.loadUser();
@@ -19,7 +20,9 @@ export class DashboardLayoutComponent implements OnInit{
       this.user = user;
     });
   }
-
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+  }
   logout() {
     this.authService.logout();
   }
