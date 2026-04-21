@@ -1,1 +1,111 @@
-<p>restaurant works!</p>
+<div class="page">
+  <div class="page-header">
+    <div class="page-title">
+      <h1>Restaurants</h1>
+      <p>{{ filteredRestaurants.length }} restaurant(s)</p>
+    </div>
+    <button class="btn-primary" (click)="openCreate()">+ Nouveau restaurant</button>
+  </div>
+
+  <div class="filters-bar">
+    <div class="search-box">
+      <input type="text" placeholder="Rechercher par nom ou ID..."
+        [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" />
+      <button *ngIf="searchTerm" class="clear-btn" (click)="searchTerm=''; applyFilters()">×</button>
+    </div>
+    <select [(ngModel)]="selectedCity" (ngModelChange)="applyFilters()">
+      <option value="">Toutes les villes</option>
+      <option *ngFor="let c of cities" [value]="c.id">{{ c.name }}</option>
+    </select>
+    <select [(ngModel)]="selectedCuisine" (ngModelChange)="applyFilters()">
+      <option value="">Toutes les cuisines</option>
+      <option *ngFor="let cu of cuisines" [value]="cu">{{ cu }}</option>
+    </select>
+    <button class="btn-ghost" (click)="clearFilters()">Réinitialiser</button>
+  </div>
+
+  <div class="loading" *ngIf="isLoading"><div class="spinner"></div><span>Chargement...</span></div>
+
+  <div class="table-container" *ngIf="!isLoading">
+    <table>
+      <thead>
+        <tr>
+          <th (click)="sort('id')"        class="sortable">ID       <span>{{ sortColumn==='id'        ? (sortAsc?'↑':'↓') : '↕' }}</span></th>
+          <th (click)="sort('name')"      class="sortable">Nom      <span>{{ sortColumn==='name'      ? (sortAsc?'↑':'↓') : '↕' }}</span></th>
+          <th>Ville</th>
+          <th (click)="sort('cuisine')"   class="sortable">Cuisine  <span>{{ sortColumn==='cuisine'   ? (sortAsc?'↑':'↓') : '↕' }}</span></th>
+          <th (click)="sort('price_avg')" class="sortable">Prix moy.<span>{{ sortColumn==='price_avg' ? (sortAsc?'↑':'↓') : '↕' }}</span></th>
+          <th (click)="sort('rating')"    class="sortable">Note     <span>{{ sortColumn==='rating'    ? (sortAsc?'↑':'↓') : '↕' }}</span></th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of paginated" class="table-row">
+          <td class="id-cell">#{{ r.id }}</td>
+          <td class="name-cell">{{ r.name }}</td>
+          <td><span class="city-badge">{{ getCityName(r.city_id) }}</span></td>
+          <td><span class="cuisine-badge">{{ r.cuisine }}</span></td>
+          <td class="cost-cell">{{ formatCost(r.price_avg) }}</td>
+          <td class="rating-cell">{{ getRatingStars(r.rating) }}</td>
+          <td>
+            <button class="btn-icon delete" (click)="delete(r)">Supprimer</button>
+          </td>
+        </tr>
+        <tr *ngIf="paginated.length === 0">
+          <td colspan="7" class="empty-state"><p>Aucun restaurant trouvé</p></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button class="page-btn" [disabled]="currentPage===1" (click)="currentPage=currentPage-1">←</button>
+    <button class="page-btn" *ngFor="let p of pages" [class.active]="p===currentPage" (click)="currentPage=p">{{ p }}</button>
+    <button class="page-btn" [disabled]="currentPage===totalPages" (click)="currentPage=currentPage+1">→</button>
+    <span class="page-info">Page {{ currentPage }} / {{ totalPages }}</span>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" *ngIf="showModal" (click)="showModal=false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Nouveau restaurant</h2>
+      <button class="modal-close" (click)="showModal=false">×</button>
+    </div>
+    <form [formGroup]="form" (ngSubmit)="save()" class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Nom *</label>
+          <input type="text" formControlName="name" placeholder="Ex: Le Nautic" />
+        </div>
+        <div class="form-group">
+          <label>Ville *</label>
+          <select formControlName="city_id">
+            <option value="">Choisir</option>
+            <option *ngFor="let c of cities" [value]="c.id">{{ c.name }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Cuisine *</label>
+          <select formControlName="cuisine">
+            <option value="">Choisir</option>
+            <option *ngFor="let cu of cuisines" [value]="cu">{{ cu }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Prix moyen (Ar) *</label>
+          <input type="number" formControlName="price_avg" min="0" />
+        </div>
+        <div class="form-group">
+          <label>Note (0-5) *</label>
+          <input type="number" formControlName="rating" min="0" max="5" step="0.1" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" (click)="showModal=false">Annuler</button>
+        <button type="submit" class="btn-primary" [disabled]="form.invalid">Créer</button>
+      </div>
+    </form>
+  </div>
+</div>
