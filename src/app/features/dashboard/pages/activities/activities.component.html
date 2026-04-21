@@ -3,43 +3,50 @@
   <!-- Header -->
   <div class="page-header">
     <div class="page-title">
-      <span class="title-icon">🎯</span>
+      <mat-icon class="explore">explore</mat-icon>
       <div>
         <h1>Activités</h1>
         <p>{{ filteredActivities.length }} activité(s) trouvée(s)</p>
       </div>
     </div>
     <button class="btn-primary" (click)="openCreate()">
-      <span>+</span> Nouvelle activité
+      <span>
+        <mat-icon class="add-icon">add</mat-icon>
+        Activité
+      </span>
     </button>
   </div>
 
   <!-- Filtres -->
   <div class="filters-bar">
     <div class="search-box">
-      <span class="search-icon">🔍</span>
+      <span class="search-icon">
+        <mat-icon class>search</mat-icon>
+      </span>
       <input
         type="text"
         placeholder="Rechercher par nom ou ID..."
         [(ngModel)]="searchTerm"
-        (ngModelChange)="applyFilters()"
-      />
-      <button *ngIf="searchTerm" class="clear-btn" (click)="searchTerm=''; applyFilters()">×</button>
+        (ngModelChange)="applyFilters()" />
+      <button *ngIf="searchTerm" class="clear-btn"
+        (click)="searchTerm=''; applyFilters()">×</button>
     </div>
 
     <select [(ngModel)]="selectedCity" (ngModelChange)="applyFilters()">
-      <option value="">Toutes les villes</option>
-      <option *ngFor="let city of cities" [value]="city.id">{{ city.name }}</option>
+      <option value>Toutes les villes</option>
+      <option *ngFor="let city of cities" [value]="city.id">{{ city.name
+        }}</option>
     </select>
 
     <select [(ngModel)]="selectedCategory" (ngModelChange)="applyFilters()">
-      <option value="">Toutes les catégories</option>
+      <option value>Toutes les catégories</option>
       <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
     </select>
 
     <select [(ngModel)]="selectedTag" (ngModelChange)="applyFilters()">
-      <option value="">Tous les tags</option>
-      <option *ngFor="let tag of tags" [value]="tag.name">{{ tag.name }}</option>
+      <option value>Tous les tags</option>
+      <option *ngFor="let tag of tags" [value]="tag.name">{{ tag.name
+        }}</option>
     </select>
 
     <button class="btn-ghost" (click)="clearFilters()">Réinitialiser</button>
@@ -57,22 +64,28 @@
       <thead>
         <tr>
           <th (click)="sort('id')" class="sortable">
-            ID <span class="sort-icon">{{ sortColumn === 'id' ? (sortAsc ? '↑' : '↓') : '↕' }}</span>
+            ID <span class="sort-icon">{{ sortColumn === 'id' ? (sortAsc ? '↑' :
+              '↓') : '↕' }}</span>
           </th>
           <th (click)="sort('name')" class="sortable">
-            Nom <span class="sort-icon">{{ sortColumn === 'name' ? (sortAsc ? '↑' : '↓') : '↕' }}</span>
+            Nom <span class="sort-icon">{{ sortColumn === 'name' ? (sortAsc ?
+              '↑' : '↓') : '↕' }}</span>
           </th>
           <th (click)="sort('city_id')" class="sortable">
-            Ville <span class="sort-icon">{{ sortColumn === 'city_id' ? (sortAsc ? '↑' : '↓') : '↕' }}</span>
+            Ville <span class="sort-icon">{{ sortColumn === 'city_id' ? (sortAsc
+              ? '↑' : '↓') : '↕' }}</span>
           </th>
           <th (click)="sort('category')" class="sortable">
-            Catégorie <span class="sort-icon">{{ sortColumn === 'category' ? (sortAsc ? '↑' : '↓') : '↕' }}</span>
+            Catégorie <span class="sort-icon">{{ sortColumn === 'category' ?
+              (sortAsc ? '↑' : '↓') : '↕' }}</span>
           </th>
           <th (click)="sort('cost')" class="sortable">
-            Coût <span class="sort-icon">{{ sortColumn === 'cost' ? (sortAsc ? '↑' : '↓') : '↕' }}</span>
+            Coût <span class="sort-icon">{{ sortColumn === 'cost' ? (sortAsc ?
+              '↑' : '↓') : '↕' }}</span>
           </th>
           <th (click)="sort('duration')" class="sortable">
-            Durée <span class="sort-icon">{{ sortColumn === 'duration' ? (sortAsc ? '↑' : '↓') : '↕' }}</span>
+            Durée <span class="sort-icon">{{ sortColumn === 'duration' ?
+              (sortAsc ? '↑' : '↓') : '↕' }}</span>
           </th>
           <th>Tags</th>
           <th>Actions</th>
@@ -86,27 +99,42 @@
             <span class="city-badge">{{ getCityName(activity.city_id) }}</span>
           </td>
           <td>
-            <span class="category-badge cat-{{ activity.category }}">{{ activity.category }}</span>
+            <span class="category-badge cat-{{ activity.category }}">{{
+              activity.category }}</span>
           </td>
           <td class="cost-cell">{{ formatCost(activity.cost) }}</td>
           <td>{{ activity.duration }}h</td>
           <td>
             <div class="tags-cell">
-              <span class="tag-pill" *ngFor="let tag of activity.tags?.slice(0, 3) ?? []">{{ tag }}</span>
-              <span class="tag-more" *ngIf="(activity.tags?.length ?? 0) > 3">+{{ (activity.tags?.length ?? 0) - 3 }}</span>
+              <span class="tag-pill"
+                *ngFor="let tag of activity.tags?.slice(0, 3) ?? []">{{ tag
+                }}</span>
+              <span class="tag-more"
+                *ngIf="(activity.tags?.length ?? 0) > 3">+{{
+                (activity.tags?.length ?? 0) - 3 }}</span>
             </div>
           </td>
           <td>
             <div class="actions">
-              <button class="btn-icon edit" (click)="openEdit(activity)" title="Modifier">✏️</button>
-              <button class="btn-icon scores" (click)="openScores(activity)" title="Scores plaisir">📊</button>
-              <button class="btn-icon delete" (click)="delete(activity)" title="Supprimer">🗑️</button>
+              <button class="btn-icon edit" (click)="openEdit(activity)"
+                title="Modifier"><mat-icon
+                  class="edit-icon">edit</mat-icon></button>
+              <button class="btn-icon scores" (click)="openScores(activity)"
+                title="Scores plaisir"> <mat-icon
+                  class="tagss">bar_chart</mat-icon>
+              </button>
+              <button class="btn-icon delete" (click)="delete(activity)"
+                title="Supprimer"> <mat-icon
+                  class="delete-icon">delete</mat-icon>
+              </button>
             </div>
           </td>
         </tr>
         <tr *ngIf="paginatedActivities.length === 0">
           <td colspan="8" class="empty-state">
-            <span>🔍</span>
+            <span>
+              <mat-icon class>search</mat-icon>
+            </span>
             <p>Aucune activité trouvée</p>
           </td>
         </tr>
@@ -116,14 +144,15 @@
 
   <!-- Pagination -->
   <div class="pagination" *ngIf="totalPages > 1">
-    <button class="page-btn" [disabled]="currentPage === 1" (click)="currentPage = currentPage - 1">←</button>
+    <button class="page-btn" [disabled]="currentPage === 1"
+      (click)="currentPage = currentPage - 1">←</button>
     <button
       class="page-btn"
       *ngFor="let page of pages"
       [class.active]="page === currentPage"
-      (click)="currentPage = page"
-    >{{ page }}</button>
-    <button class="page-btn" [disabled]="currentPage === totalPages" (click)="currentPage = currentPage + 1">→</button>
+      (click)="currentPage = page">{{ page }}</button>
+    <button class="page-btn" [disabled]="currentPage === totalPages"
+      (click)="currentPage = currentPage + 1">→</button>
     <span class="page-info">Page {{ currentPage }} / {{ totalPages }}</span>
   </div>
 
@@ -142,22 +171,25 @@
 
         <div class="form-group full">
           <label>Nom de l'activité *</label>
-          <input type="text" formControlName="name" placeholder="Ex: Parc Ranomafana" />
+          <input type="text" formControlName="name"
+            placeholder="Ex: Parc Ranomafana" />
         </div>
 
         <div class="form-group">
           <label>Ville *</label>
           <select formControlName="city_id">
-            <option value="">Choisir une ville</option>
-            <option *ngFor="let city of cities" [value]="city.id">{{ city.name }}</option>
+            <option value>Choisir une ville</option>
+            <option *ngFor="let city of cities" [value]="city.id">{{ city.name
+              }}</option>
           </select>
         </div>
 
         <div class="form-group">
           <label>Catégorie *</label>
           <select formControlName="category">
-            <option value="">Choisir</option>
-            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+            <option value>Choisir</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat
+              }}</option>
           </select>
         </div>
 
@@ -168,7 +200,8 @@
 
         <div class="form-group">
           <label>Durée (heures) *</label>
-          <input type="number" formControlName="duration" min="0.5" step="0.5" placeholder="2" />
+          <input type="number" formControlName="duration" min="0.5" step="0.5"
+            placeholder="2" />
         </div>
 
         <div class="form-group full">
@@ -179,15 +212,15 @@
               class="tag-toggle"
               *ngFor="let tag of tags"
               [class.selected]="isTagSelected(tag.id)"
-              (click)="toggleTag(tag.id)"
-            >{{ tag.name }}</button>
+              (click)="toggleTag(tag.id)">{{ tag.name }}</button>
           </div>
         </div>
 
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn-ghost" (click)="showModal = false">Annuler</button>
+        <button type="button" class="btn-ghost"
+          (click)="showModal = false">Annuler</button>
         <button type="submit" class="btn-primary" [disabled]="form.invalid">
           {{ isEditing ? 'Enregistrer' : 'Créer' }}
         </button>
@@ -197,7 +230,8 @@
 </div>
 
 <!-- Modal Scores plaisir -->
-<div class="modal-overlay" *ngIf="showScoresModal" (click)="showScoresModal = false">
+<div class="modal-overlay" *ngIf="showScoresModal"
+  (click)="showScoresModal = false">
   <div class="modal modal-scores" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h2>Scores plaisir — {{ selectedActivity?.name }}</h2>
@@ -205,27 +239,40 @@
     </div>
 
     <form [formGroup]="scoresForm" (ngSubmit)="saveScores()" class="modal-body">
-      <p class="scores-hint">Attribuez un score de 0 à 10 pour chaque type de voyage.</p>
+      <p class="scores-hint">Attribuez un score de 0 à 10 pour chaque type de
+        voyage.</p>
 
       <div class="scores-grid">
         <div class="score-item" *ngFor="let type of tripTypes">
           <label>
-            <span class="score-emoji">
-              {{ type === 'nature' ? '🌿' : type === 'culture' ? '🏛️' : type === 'aventure' ? '🧗' :
-                 type === 'gastronomie' ? '🍽️' : type === 'famille' ? '👨‍👩‍👧' : type === 'plage' ? '🏖️' : '💎' }}
+            <span class="score-icon" [ngClass]="type">
+              <mat-icon>
+                {{
+                  type === 'nature' ? 'park' :
+                  type === 'culture' ? 'account_balance' :
+                  type === 'aventure' ? 'hiking' :
+                  type === 'gastronomie' ? 'restaurant' :
+                  type === 'famille' ? 'groups' :
+                  type === 'plage' ? 'beach_access' :
+                  type === 'luxe' ? 'auto_awesome' :
+                  'auto_awesome'
+                }}
+              </mat-icon>
             </span>
             {{ type }}
           </label>
           <div class="score-input-row">
-            <input type="range" [formControlName]="type" min="0" max="10" step="1" />
+            <input type="range" [formControlName]="type" min="0" max="10"
+              step="1" />
             <span class="score-value">{{ scoresForm.get(type)?.value }}</span>
           </div>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn-ghost" (click)="showScoresModal = false">Annuler</button>
-        <button type="submit" class="btn-primary">Enregistrer les scores</button>
+        <button type="button" class="btn-ghost"
+          (click)="showScoresModal = false">Annuler</button>
+        <button type="submit" class="btn-primary">Enregistrer </button>
       </div>
     </form>
   </div>

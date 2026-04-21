@@ -1,15 +1,28 @@
 :host {
-  --bg:      #0f1117;
-  --bg2:     #1a1d27;
-  --bg3:     #222637;
-  --border:  #2e3348;
-  --text:    #e8eaf0;
-  --muted:   #6b7280;
-  --accent:  #6c8ef0;
-  --green:   #4ade80;
-  --yellow:  #fbbf24;
-  --red:     #f87171;
-  --radius:  12px;
+  /* Backgrounds */
+  --bg: #f5f7fb;
+  --bg2: #ffffff;
+  --bg3: #f8fafc;
+
+  /* Borders */
+  --border: #e5e7eb;
+
+  /* Text */
+  --text: #1f2937;
+  --muted: #6b7280;
+
+  /* Primary Accent */
+  --accent: #4f46e5;
+  --accent-light: #eef2ff;
+
+  /* Status */
+  --green: #22c55e;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+
+  /* UI */
+  --radius: 14px;
+  --shadow: 0 10px 30px rgba(0,0,0,0.04);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,7 +32,7 @@
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Manrope','Inter', 'Poppins';
 }
 
 /* // ── Header ──────────────────────────────────────────────────────────────── */

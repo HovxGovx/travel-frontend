@@ -50,7 +50,7 @@
           <td class="cost-cell">{{ formatCost(t.cost) }}</td>
           <td>{{ t.duration }}h</td>
           <td>
-            <button class="btn-icon delete" (click)="delete(t)">Supprimer</button>
+            <button class="btn-icon delete" (click)="delete(t)"><mat-icon class="delete-icon">delete</mat-icon></button>
           </td>
         </tr>
         <tr *ngIf="paginated.length === 0">

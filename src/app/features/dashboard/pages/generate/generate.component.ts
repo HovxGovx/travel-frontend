@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TripService, TripResult, TripRequest } from '../../../../core/services/trip.service';
 import { ActivityService, City } from '../../../../core/services/activity.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-generate',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatIconModule],
   templateUrl: './generate.component.html',
   styleUrls: ['./generate.component.css']
 })

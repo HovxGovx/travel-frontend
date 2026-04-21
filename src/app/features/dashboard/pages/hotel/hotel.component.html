@@ -48,7 +48,7 @@
           <td><span class="category-badge cat-{{ h.category }}">{{ h.category }}</span></td>
           <td class="cost-cell">{{ formatCost(h.price_per_night) }}</td>
           <td>
-            <button class="btn-icon delete" (click)="delete(h)">Supprimer</button>
+            <button class="btn-icon delete" (click)="delete(h)"><mat-icon class="delete-icon">delete</mat-icon></button>
           </td>
         </tr>
         <tr *ngIf="paginated.length === 0">

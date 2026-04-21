@@ -149,14 +149,18 @@
 
         <div class="summary-card">
           <div class="summary-row">
-            <span class="summary-icon">💰</span>
+            <span class="summary-icon">
+              <mat-icon class="payements">payements</mat-icon>
+            </span>
             <div>
               <span class="summary-label">Budget</span>
               <span class="summary-value">{{ formatCost(summaryData.budget) }}</span>
             </div>
           </div>
           <div class="summary-row">
-            <span class="summary-icon">📅</span>
+            <span class="summary-icon">
+              <mat-icon class="calendar_month">calendar_month</mat-icon>
+            </span>
             <div>
               <span class="summary-label">Durée</span>
               <span class="summary-value">{{ summaryData.duration }} jour(s)</span>
@@ -177,7 +181,9 @@
             </div>
           </div>
           <div class="summary-row">
-            <span class="summary-icon">🗺️</span>
+            <span class="summary-icon">
+              <mat-icon class="location_city">location_city</mat-icon>
+            </span>
             <div>
               <span class="summary-label">Villes</span>
               <span class="summary-value">
@@ -188,7 +194,9 @@
         </div>
 
         <div class="algo-info">
-          <span class="algo-badge">🧬 Algorithme génétique</span>
+          <span class="algo-badge">
+            <mat-icon class=""></mat-icon>
+            Algorithme génétique</span>
           <p>50 itinéraires évoluent sur 200 générations pour trouver la solution optimale selon vos critères.</p>
         </div>
 

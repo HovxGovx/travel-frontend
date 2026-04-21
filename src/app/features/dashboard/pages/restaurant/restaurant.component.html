@@ -48,7 +48,7 @@
           <td class="cost-cell">{{ formatCost(r.price_avg) }}</td>
           <td class="rating-cell">{{ getRatingStars(r.rating) }}</td>
           <td>
-            <button class="btn-icon delete" (click)="delete(r)">Supprimer</button>
+            <button class="btn-icon delete" (click)="delete(r)"><mat-icon class="delete-icon">delete</mat-icon></button>
           </td>
         </tr>
         <tr *ngIf="paginated.length === 0">

@@ -4,11 +4,12 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { HotelService, Hotel } from '../../../../core/services/hotel.service';
 import { CityService, City } from '../../../../core/services/city.service';
 
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-hotels',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatIconModule],
   templateUrl: './hotel.component.html',
   styleUrls: ['../activities/activities.component.css']
 })
