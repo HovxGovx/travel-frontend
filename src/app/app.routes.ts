@@ -21,10 +21,34 @@ export const routes: Routes = [
     children: [
       { path:'', component: HomeComponent },
       {
+        path: 'city',
+        loadComponent: () =>
+          import('./features/dashboard/pages/city/city.component')
+            .then(m => m.CityComponent)
+      },
+      {
         path: 'activities',
         loadComponent: () =>
           import('./features/dashboard/pages/activities/activities.component')
             .then(m => m.ActivitiesComponent)
+      },
+      {
+        path: 'restaurant',
+        loadComponent: () =>
+          import('./features/dashboard/pages/restaurant/restaurant.component')
+            .then(m => m.RestaurantComponent)
+      },
+      {
+        path: 'hotel',
+        loadComponent: () =>
+          import('./features/dashboard/pages/hotel/hotel.component')
+            .then(m => m.HotelComponent)
+      },
+      {
+        path: 'transport',
+        loadComponent: () =>
+          import('./features/dashboard/pages/transport/transport.component')
+            .then(m => m.TransportComponent)
       },
       {
         path: 'generate',

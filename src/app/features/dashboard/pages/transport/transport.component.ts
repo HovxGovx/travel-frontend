@@ -8,10 +8,10 @@ import { CityService, City } from '../../../../core/services/city.service';
   selector: 'app-transports',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './transports.component.html',
-  styleUrls: ['./transports.component.scss']
+  templateUrl: './transport.component.html',
+  styleUrls: ['../activities/activities.component.css']
 })
-export class TransportsComponent implements OnInit {
+export class TransportComponent implements OnInit {
 
   transports:         Transport[] = [];
   filteredTransports: Transport[] = [];

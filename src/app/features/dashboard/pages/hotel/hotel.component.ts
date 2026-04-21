@@ -9,10 +9,10 @@ import { CityService, City } from '../../../../core/services/city.service';
   selector: 'app-hotels',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './hotels.component.html',
-  styleUrls: ['./hotels.component.scss']
+  templateUrl: './hotel.component.html',
+  styleUrls: ['../activities/activities.component.css']
 })
-export class HotelsComponent implements OnInit {
+export class HotelComponent implements OnInit {
 
   hotels:          Hotel[] = [];
   filteredHotels:  Hotel[] = [];

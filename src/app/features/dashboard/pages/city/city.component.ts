@@ -7,10 +7,10 @@ import { CityService, City } from '../../../../core/services/city.service';
   selector: 'app-cities',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './cities.component.html',
-  styleUrls: ['./cities.component.css']
+  templateUrl: './city.component.html',
+  styleUrls: ['../activities/activities.component.css']
 })
-export class CitiesComponent implements OnInit {
+export class CityComponent implements OnInit {
 
   cities:          City[] = [];
   filteredCities:  City[] = [];

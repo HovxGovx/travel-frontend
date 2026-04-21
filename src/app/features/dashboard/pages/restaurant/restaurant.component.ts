@@ -8,10 +8,10 @@ import { CityService, City } from '../../../../core/services/city.service';
   selector: 'app-restaurants',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './restaurants.component.html',
+  templateUrl: './restaurant.component.html',
   styleUrls: ['../activities/activities.component.css']
 })
-export class RestaurantsComponent implements OnInit {
+export class RestaurantComponent implements OnInit {
 
   restaurants:         Restaurant[] = [];
   filteredRestaurants: Restaurant[] = [];
