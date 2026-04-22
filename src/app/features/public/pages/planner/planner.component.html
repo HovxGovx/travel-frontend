@@ -1,0 +1,495 @@
+<div class="planner">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="material-icons nav-icon">explore</span>
+      <span class="nav-title">Travel AI</span>
+      <span class="nav-badge">Madagascar</span>
+    </div>
+    <button class="btn-outline" (click)="reset()" *ngIf="trip">
+      <span class="material-icons">refresh</span>
+      Nouveau voyage
+    </button>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero" *ngIf="!trip && !isGenerating">
+    <div class="hero-content">
+      <h1>Planifiez votre voyage idéal</h1>
+      <p>Notre algorithme génétique analyse des milliers de combinaisons pour créer l'itinéraire parfait selon vos préférences.</p>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+
+    <!-- ── Formulaire ── -->
+    <div class="form-container" *ngIf="!trip && !isGenerating">
+
+      <!-- Steps -->
+      <div class="steps-bar">
+        <div class="step-item" *ngFor="let s of [1,2,3]"
+          [class.active]="currentStep === s"
+          [class.done]="currentStep > s">
+          <div class="step-circle">
+            <span class="material-icons" *ngIf="currentStep > s">check</span>
+            <span *ngIf="currentStep <= s">{{ s }}</span>
+          </div>
+          <span class="step-label">
+            {{ s === 1 ? 'Votre voyage' : s === 2 ? 'Préférences' : 'Lancer' }}
+          </span>
+          <div class="step-line" *ngIf="s < 3"></div>
+        </div>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="step-panel" *ngIf="currentStep === 1">
+        <h2 class="step-title">Décrivez votre voyage idéal</h2>
+        <form [formGroup]="step1">
+
+          <div class="form-row">
+            <div class="form-field">
+              <label>Budget total</label>
+              <div class="input-unit">
+                <input type="number" formControlName="budget" min="50000" step="10000" />
+                <span>Ar</span>
+              </div>
+              <p class="field-hint">{{ formatCost(step1.value.budget) }}</p>
+            </div>
+
+            <div class="form-field">
+              <label>Durée — {{ step1.value.duration }} jour(s)</label>
+              <input type="range" formControlName="duration" min="1" max="30" step="1" class="range-input" />
+              <div class="range-labels"><span>1 jour</span><span>30 jours</span></div>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label>Quel type de voyage souhaitez-vous ?</label>
+            <div class="type-grid">
+              <button type="button" class="type-btn"
+                *ngFor="let t of tripTypes"
+                [class.active]="step1.value.trip_type === t.value"
+                (click)="selectTripType(t.value)">
+                <span class="material-icons">
+                  {{ t.value === 'nature' ? 'forest' : t.value === 'culture' ? 'account_balance' :
+                     t.value === 'aventure' ? 'hiking' : t.value === 'gastronomie' ? 'restaurant' :
+                     t.value === 'famille' ? 'family_restroom' : t.value === 'plage' ? 'beach_access' : 'star' }}
+                </span>
+                {{ t.label }}
+              </button>
+            </div>
+          </div>
+
+        </form>
+
+        <div class="step-actions">
+          <div></div>
+          <button class="btn-primary" (click)="nextStep()" [disabled]="step1.invalid">
+            Continuer
+            <span class="material-icons">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step-panel" *ngIf="currentStep === 2">
+        <h2 class="step-title">Personnalisez vos préférences</h2>
+
+        <div class="form-field">
+          <label>L'algorithme doit prioritairement...</label>
+          <div class="optimize-grid">
+            <button type="button" class="optimize-btn"
+              *ngFor="let m of optimizeModes"
+              [class.active]="step2.value.optimize_for === m.value"
+              (click)="selectOptimize(m.value)">
+              <span class="material-icons">
+                {{ m.value === 'balanced' ? 'balance' : m.value === 'pleasure' ? 'sentiment_very_satisfied' :
+                   m.value === 'budget' ? 'savings' : 'map' }}
+              </span>
+              <span class="opt-label">{{ m.label }}</span>
+              <span class="opt-desc">{{ m.desc }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>
+            Villes à visiter
+            <span class="label-hint">(optionnel — vide = toutes les villes)</span>
+          </label>
+          <div class="cities-grid">
+            <button type="button" class="city-btn"
+              *ngFor="let city of cities"
+              [class.active]="isCitySelected(city.name)"
+              (click)="toggleCity(city.name)">
+              <span class="material-icons">location_on</span>
+              <span class="city-name">{{ city.name }}</span>
+              <span class="city-region">{{ city.region }}</span>
+            </button>
+          </div>
+          <p class="field-hint" *ngIf="selectedCities.length > 0">
+            Sélectionnées : {{ selectedCities.join(', ') }}
+          </p>
+        </div>
+
+        <div class="step-actions">
+          <button class="btn-ghost" (click)="prevStep()">
+            <span class="material-icons">arrow_back</span>
+            Retour
+          </button>
+          <button class="btn-primary" (click)="nextStep()">
+            Résumé
+            <span class="material-icons">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step-panel" *ngIf="currentStep === 3">
+        <h2 class="step-title">Prêt à générer votre voyage ?</h2>
+
+        <div class="summary">
+          <div class="summary-item">
+            <span class="material-icons">payments</span>
+            <div>
+              <span class="s-label">Budget</span>
+              <span class="s-value">{{ formatCost(summaryData.budget) }}</span>
+            </div>
+          </div>
+          <div class="summary-item">
+            <span class="material-icons">calendar_today</span>
+            <div>
+              <span class="s-label">Durée</span>
+              <span class="s-value">{{ summaryData.duration }} jour(s)</span>
+            </div>
+          </div>
+          <div class="summary-item">
+            <span class="material-icons">travel_explore</span>
+            <div>
+              <span class="s-label">Type</span>
+              <span class="s-value">{{ summaryData.trip_type?.label ?? '—' }}</span>
+            </div>
+          </div>
+          <div class="summary-item">
+            <span class="material-icons">tune</span>
+            <div>
+              <span class="s-label">Optimisation</span>
+              <span class="s-value">{{ summaryData.optimize_for?.label ?? '—' }}</span>
+            </div>
+          </div>
+          <div class="summary-item">
+            <span class="material-icons">place</span>
+            <div>
+              <span class="s-label">Villes</span>
+              <span class="s-value">{{ summaryData.cities.length > 0 ? summaryData.cities.join(', ') : 'Toutes' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="algo-banner">
+          <span class="material-icons">psychology</span>
+          <div>
+            <strong>Algorithme génétique</strong>
+            <p>50 itinéraires évoluent sur plusieurs centaines de générations pour trouver la solution optimale.</p>
+          </div>
+        </div>
+
+        <div class="error-alert" *ngIf="errorMessage">
+          <span class="material-icons">warning</span>
+          {{ errorMessage }}
+        </div>
+
+        <div class="step-actions">
+          <button class="btn-ghost" (click)="prevStep()">
+            <span class="material-icons">arrow_back</span>
+            Retour
+          </button>
+          <button class="btn-generate" (click)="generate()">
+            <span class="material-icons">rocket_launch</span>
+            Lancer l'algorithme
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Progression ── -->
+    <div class="progress-container" *ngIf="isGenerating">
+      <div class="progress-card">
+        <span class="material-icons progress-icon">psychology</span>
+        <h2>Algorithme génétique en cours</h2>
+        <p class="progress-sub">Optimisation de votre itinéraire...</p>
+
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" [style.width.%]="progressValue"></div>
+        </div>
+
+        <div class="progress-info">
+          <span class="progress-pct">{{ progressValue | number:'1.0-0' }}%</span>
+          <span class="progress-msg">{{ progressLabel }}</span>
+        </div>
+
+        <div class="dna-dots">
+          <div class="dot" *ngFor="let d of [1,2,3,4,5,6,7,8]"
+            [style.animation-delay]="d * 0.12 + 's'"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Résultat ── -->
+    <div class="result-container" *ngIf="trip && !isGenerating">
+
+      <!-- Score bar -->
+      <div class="result-header">
+        <div class="result-stats">
+          <div class="stat-card">
+            <span class="material-icons">stars</span>
+            <div>
+              <span class="stat-label">Score optimal</span>
+              <span class="stat-value score-value">{{ getScorePercent(trip.score) }}%</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="material-icons">payments</span>
+            <div>
+              <span class="stat-label">Coût total</span>
+              <span class="stat-value">{{ formatCost(trip.total_cost) }}</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="material-icons">account_balance_wallet</span>
+            <div>
+              <span class="stat-label">Budget utilisé</span>
+              <span class="stat-value">{{ getBudgetPercent() }}%</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="material-icons">calendar_today</span>
+            <div>
+              <span class="stat-label">Durée</span>
+              <span class="stat-value">{{ trip.duration }} jours</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-actions-top">
+          <p class="edit-hint">
+            <span class="material-icons">edit_note</span>
+            Cliquez sur un jour pour le personnaliser
+          </p>
+          <button class="btn-outline" (click)="reset()">
+            <span class="material-icons">refresh</span>
+            Regénérer
+          </button>
+        </div>
+      </div>
+
+      <!-- Budget bar -->
+      <div class="budget-bar-wrap">
+        <div class="budget-bar-fill"
+          [style.width.%]="getBudgetPercent()"
+          [class.over-budget]="trip.total_cost > trip.budget">
+        </div>
+        <span class="budget-label">
+          {{ formatCost(trip.total_cost) }} / {{ formatCost(trip.budget) }}
+        </span>
+      </div>
+
+      <!-- Jours -->
+      <div class="days-grid">
+        <div class="day-card" *ngFor="let day of trip.days; let i = index"
+          (click)="openEditDay(i)">
+
+          <div class="day-top">
+            <div class="day-num">Jour {{ day.day }}</div>
+            <div class="day-city">
+              <span class="material-icons">place</span>
+              {{ day.city }}
+            </div>
+            <div class="day-cost-badge">{{ formatCost(day.cost_day) }}</div>
+          </div>
+
+          <div class="day-transport" *ngIf="day.transport">
+            <span class="material-icons">directions_bus</span>
+            {{ day.transport }}
+          </div>
+
+          <div class="day-activities">
+            <div class="act-item" *ngFor="let act of day.activities">
+              <span class="material-icons">place</span>
+              {{ act }}
+            </div>
+            <div class="act-empty" *ngIf="day.activities.length === 0">
+              Aucune activité
+            </div>
+          </div>
+
+          <div class="day-hotel" *ngIf="day.hotel">
+            <span class="material-icons">hotel</span>
+            {{ day.hotel }}
+          </div>
+
+          <button class="day-edit-btn">
+            <span class="material-icons">edit</span>
+            Modifier
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ── Modal édition d'un jour ── -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal()">
+  <div class="modal-edit" (click)="$event.stopPropagation()">
+
+    <div class="modal-head">
+      <div>
+        <h2>Modifier — Jour {{ editingDay?.day }}</h2>
+        <p>Personnalisez ce jour selon vos envies</p>
+      </div>
+      <button class="modal-close-btn" (click)="closeEditModal()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="modal-body-edit" *ngIf="editingDay">
+
+      <!-- Changer la ville -->
+      <div class="edit-section">
+        <h3>
+          <span class="material-icons">location_city</span>
+          Ville
+        </h3>
+        <div class="city-select-grid">
+          <button type="button" class="city-sel-btn"
+            *ngFor="let city of cities"
+            [class.active]="editingDay.city === city.name"
+            (click)="changeCity(city.name)">
+            {{ city.name }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Transport -->
+      <div class="edit-section" *ngIf="trip as t">
+        <h3 *ngIf="t.days && editingDayIndex > 0">
+          <span class="material-icons">directions_bus</span>
+          Transport
+          <span class="section-sub">depuis
+            {{ t.days[editingDayIndex - 1]?.city }}
+          </span>
+        </h3>
+
+        <div class="transport-list" *ngIf="transportsForDay.length > 0">
+          <button type="button" class="transport-btn"
+            [class.active]="editingDay.transport === null"
+            (click)="setTransport(null)">
+            <span class="material-icons">block</span>
+            Aucun
+          </button>
+          <button type="button" class="transport-btn"
+            *ngFor="let t of transportsForDay"
+            [class.active]="editingDay.transport === t.name"
+            (click)="setTransport(t)">
+            <span class="material-icons">
+              {{ t.type === 'avion' ? 'flight' : t.type === 'train' ? 'train' : 'directions_bus' }}
+            </span>
+            <span class="t-name">{{ t.name }}</span>
+            <span class="t-meta">{{ t.duration }}h — {{ formatCost(t.cost) }}</span>
+          </button>
+        </div>
+
+        <p class="no-transport" *ngIf="transportsForDay.length === 0">
+          Aucun transport disponible pour cette route.
+        </p>
+      </div>
+
+      <!-- Activités -->
+      <div class="edit-section">
+        <h3>
+          <span class="material-icons">local_activity</span>
+          Activités
+          <span class="section-badge">{{ editingDay.activities.length }} sélectionnée(s)</span>
+        </h3>
+
+        <div class="act-filters">
+          <input type="text" placeholder="Rechercher une activité..."
+            [(ngModel)]="activitySearch" class="act-search" />
+          <select [(ngModel)]="activityCityFilter" class="act-city-filter">
+            <option value="">Toutes les villes</option>
+            <option *ngFor="let c of cities" [value]="c.name">{{ c.name }}</option>
+          </select>
+        </div>
+
+        <div class="activities-list">
+          <div class="act-row"
+            *ngFor="let act of availableActivities"
+            [class.selected]="isActivityInDay(act.name)"
+            (click)="toggleActivityInDay(act)">
+            <div class="act-check">
+              <span class="material-icons">{{ isActivityInDay(act.name) ? 'check_circle' : 'radio_button_unchecked' }}</span>
+            </div>
+            <div class="act-info">
+              <span class="act-name">{{ act.name }}</span>
+              <span class="act-meta">{{ getCityName(act.city_id) }} · {{ act.duration }}h · {{ formatCost(act.cost) }}</span>
+            </div>
+            <span class="act-cat">{{ act.category }}</span>
+          </div>
+          <div class="act-empty-list" *ngIf="availableActivities.length === 0">
+            Aucune activité trouvée
+          </div>
+        </div>
+      </div>
+
+      <!-- Hôtel -->
+      <div class="edit-section">
+        <h3>
+          <span class="material-icons">hotel</span>
+          Hôtel
+        </h3>
+        <div class="hotels-list">
+          <div class="hotel-row"
+            *ngFor="let h of hotelsForCity"
+            [class.selected]="editingDay.hotel === h.name"
+            (click)="setHotel(h)">
+            <div class="hotel-check">
+              <span class="material-icons">{{ editingDay.hotel === h.name ? 'check_circle' : 'radio_button_unchecked' }}</span>
+            </div>
+            <div class="hotel-info">
+              <span class="hotel-name">{{ h.name }}</span>
+              <span class="hotel-meta">
+                {{ '★'.repeat(h.stars) }} · {{ h.category }} · {{ formatCost(h.price_per_night) }}/nuit
+              </span>
+            </div>
+          </div>
+          <div class="act-empty-list" *ngIf="hotelsForCity.length === 0">
+            Aucun hôtel disponible pour cette ville
+          </div>
+        </div>
+      </div>
+
+      <!-- Résumé coût du jour -->
+      <div class="day-cost-summary">
+        <span class="material-icons">receipt_long</span>
+        <span>Coût estimé de ce jour</span>
+        <strong>{{ formatCost(editingDay.cost_day) }}</strong>
+      </div>
+
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn-ghost-modal" (click)="closeEditModal()">Annuler</button>
+      <button class="btn-save-modal" (click)="saveEditDay()">
+        <span class="material-icons">save</span>
+        Enregistrer
+      </button>
+    </div>
+
+  </div>
+</div>

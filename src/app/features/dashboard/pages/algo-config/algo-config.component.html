@@ -1,0 +1,103 @@
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-title">
+      <h1>Paramètres de l'algorithme génétique</h1>
+      <p>Configuration avancée — modifications appliquées à la prochaine génération</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-ghost" (click)="reset()" [disabled]="isResetting">
+        {{ isResetting ? 'Réinitialisation...' : 'Réinitialiser' }}
+      </button>
+      <button class="btn-primary" (click)="save()" [disabled]="form.invalid || isSaving">
+        {{ isSaving ? 'Sauvegarde...' : 'Sauvegarder' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Success -->
+  <div class="alert alert-success" *ngIf="saveSuccess">
+    Paramètres sauvegardés avec succès.
+  </div>
+
+  <!-- Error -->
+  <div class="alert alert-error" *ngIf="errorMsg">
+    {{ errorMsg }}
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <span>Chargement de la configuration...</span>
+  </div>
+
+  <form [formGroup]="form" *ngIf="!isLoading">
+
+    <div class="section" *ngFor="let section of sections">
+      <div class="section-header">
+        <h2>{{ section.title }}</h2>
+        <p>{{ section.desc }}</p>
+      </div>
+
+      <div class="fields-grid">
+        <div class="field-card" *ngFor="let field of section.fields">
+          <div class="field-header">
+            <label [for]="field.key">{{ field.label }}</label>
+            <span class="field-value" [class.float-val]="isFloat(field.type)">
+              {{ isFloat(field.type) ? (getFieldValue(field.key) | number:'1.2-2') : getFieldValue(field.key) }}
+            </span>
+          </div>
+          <p class="field-desc">{{ field.desc }}</p>
+
+          <input
+            type="range"
+            [id]="field.key"
+            [formControlName]="field.key"
+            [min]="field.min"
+            [max]="field.max"
+            [step]="field.step"
+          />
+
+          <div class="field-range">
+            <span>{{ field.min }}</span>
+            <span>{{ field.max }}</span>
+          </div>
+
+          <input
+            type="number"
+            [formControlName]="field.key"
+            [min]="field.min"
+            [max]="field.max"
+            [step]="field.step"
+            class="field-input"
+          />
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  <!-- Info panel -->
+  <div class="info-panel" *ngIf="!isLoading">
+    <h3>Impact des paramètres sur les performances</h3>
+    <div class="info-grid">
+      <div class="info-card">
+        <span class="info-label">Population plus grande</span>
+        <span class="info-desc">Meilleure diversité, mais plus lent</span>
+      </div>
+      <div class="info-card">
+        <span class="info-label">Plus de générations</span>
+        <span class="info-desc">Meilleure convergence, temps d'exécution plus long</span>
+      </div>
+      <div class="info-card">
+        <span class="info-label">Mutation haute</span>
+        <span class="info-desc">Évite les optima locaux, mais ralentit la convergence</span>
+      </div>
+      <div class="info-card">
+        <span class="info-label">Tournoi plus grand</span>
+        <span class="info-desc">Pression sélective plus forte, convergence plus rapide</span>
+      </div>
+    </div>
+  </div>
+
+</div>

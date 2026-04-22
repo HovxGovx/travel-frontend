@@ -4,7 +4,7 @@
   <div class="page-header">
     <div class="page-title">
       <span class="title-icon">
-        
+
       </span>
       <div>
         <h1>Générateur de voyage</h1>
@@ -74,7 +74,10 @@
                 *ngFor="let type of tripTypes"
                 [class.selected]="step1.value.trip_type === type.value"
                 (click)="selectTripType(type.value)">
-                <span class="type-emoji">{{ type.emoji }}</span>
+                <span class="type-emoji" [ngClass]= "type.emoji">
+
+                  <mat-icon >{{ type.emoji }}</mat-icon>
+                </span>
                 <span class="type-label">{{ type.label }}</span>
               </button>
             </div>
@@ -106,7 +109,9 @@
                 *ngFor="let mode of optimizeModes"
                 [class.selected]="step2.value.optimize_for === mode.value"
                 (click)="selectOptimize(mode.value)">
-                <span class="opt-emoji">{{ mode.emoji }}</span>
+                <span class="opt-emoji">
+                  <mat-icon class="{{ mode.emoji }}">{{ mode.emoji }}</mat-icon>
+                </span>
                 <span class="opt-label">{{ mode.label }}</span>
                 <span class="opt-desc">{{ mode.desc }}</span>
               </button>
@@ -149,11 +154,12 @@
 
         <div class="summary-card">
           <div class="summary-row">
-            <span class="summary-icon">
-              <mat-icon class="payements">payements</mat-icon>
+            <span class="">
+              <mat-icon class="payments">payments</mat-icon>
             </span>
             <div>
-              <span class="summary-label">Budget</span>
+              <span class="summary-label">Budget
+              </span>
               <span class="summary-value">{{ formatCost(summaryData.budget) }}</span>
             </div>
           </div>
@@ -167,14 +173,18 @@
             </div>
           </div>
           <div class="summary-row">
-            <span class="summary-icon">{{ summaryData.trip_type?.emoji }}</span>
+            <span class="summary-icon">
+              <mat-icon class="favorite">favorite</mat-icon>
+            </span>
             <div>
               <span class="summary-label">Type</span>
               <span class="summary-value">{{ summaryData.trip_type?.label }}</span>
             </div>
           </div>
           <div class="summary-row">
-            <span class="summary-icon">{{ summaryData.optimize_for?.emoji }}</span>
+            <span class="summary-icon">
+              <mat-icon class="tune">tune</mat-icon>
+            </span>
             <div>
               <span class="summary-label">Optimisation</span>
               <span class="summary-value">{{ summaryData.optimize_for?.label }}</span>
@@ -182,7 +192,7 @@
           </div>
           <div class="summary-row">
             <span class="summary-icon">
-              <mat-icon class="location_city">location_city</mat-icon>
+              <mat-icon class="map">map</mat-icon>
             </span>
             <div>
               <span class="summary-label">Villes</span>
@@ -195,17 +205,20 @@
 
         <div class="algo-info">
           <span class="algo-badge">
-            <mat-icon class=""></mat-icon>
-            Algorithme génétique</span>
+            <mat-icon class="biotech">biotech</mat-icon>
+            <span>
+              Algorithme génétique
+            </span>
+          </span>
           <p>50 itinéraires évoluent sur 200 générations pour trouver la solution optimale selon vos critères.</p>
         </div>
 
-        <div class="error-msg" *ngIf="errorMessage">⚠️ {{ errorMessage }}</div>
+        <div class="error-msg" *ngIf="errorMessage"> {{ errorMessage }}</div>
 
         <div class="step-actions">
           <button class="btn-ghost" (click)="prevStep()">← Retour</button>
           <button class="btn-generate" (click)="generate()">
-            🚀 Lancer l'algorithme
+             Lancer l'algorithme
           </button>
         </div>
       </div>
@@ -213,7 +226,9 @@
       <!-- ── PROGRESSION ── -->
       <div class="progress-panel" *ngIf="isGenerating">
         <div class="progress-header">
-          <span class="dna-icon">🧬</span>
+          <span class="dna-icon">
+            <mat-icon class="biotech">biotech</mat-icon>
+          </span>
           <h2>Algorithme génétique en cours...</h2>
         </div>
 
@@ -230,7 +245,9 @@
         <div class="dna-animation">
           <div class="dna-strand">
             <div class="node" *ngFor="let n of [1,2,3,4,5,6,7,8]"
-              [style.animation-delay]="n * 0.1 + 's'"></div>
+              [style.animation-delay]="n * 0.1 + 's'">
+            </div>
+            </div>
           </div>
         </div>
 
@@ -251,8 +268,12 @@
             </span>
           </div>
           <div class="result-meta">
-            <span>💰 {{ formatCost(generatedTrip.result?.total_cost ?? 0) }}</span>
-            <span>📅 {{ generatedTrip.duration }} jours</span>
+              <span>
+              <mat-icon class="payments">payments</mat-icon>
+                {{ formatCost(generatedTrip.result?.total_cost ?? 0) }}</span>
+            <span>
+              <mat-icon class="map">map</mat-icon>
+              {{ generatedTrip.duration }} jours</span>
             <span>{{ getTripTypeEmoji(generatedTrip.trip_type) }} {{ generatedTrip.trip_type }}</span>
           </div>
         </div>
@@ -262,17 +283,22 @@
           <div class="day-card" *ngFor="let day of generatedTrip.result?.days">
             <div class="day-header">
               <div class="day-number">Jour {{ day.day }}</div>
-              <div class="day-city">📍 {{ day.city }}</div>
+              <div class="day-city">
+                <mat-icon class="location_city">location_city</mat-icon>
+                {{ day.city }}</div>
               <div class="day-cost">{{ formatCost(day.cost_day) }}</div>
             </div>
 
             <div class="day-transport" *ngIf="day.transport">
-              🚌 {{ day.transport }}
+              <mat-icon class="directions_car">directions_car</mat-icon>
+
+              {{ day.transport }}
             </div>
 
             <div class="day-activities">
               <div class="activity-item" *ngFor="let act of day.activities">
-                🎯 {{ act }}
+                <mat-icon class="insigth">insigth</mat-icon>
+                {{ act }}
               </div>
               <div class="no-activity" *ngIf="day.activities.length === 0">
                 Journée de déplacement
@@ -280,13 +306,16 @@
             </div>
 
             <div class="day-hotel" *ngIf="day.hotel">
-              🏨 {{ day.hotel }}
+              <mat-icon class="hotels">hotels</mat-icon>
+              {{ day.hotel }}
             </div>
           </div>
         </div>
 
         <div class="result-actions">
-          <button class="btn-ghost" (click)="reset()">🔄 Nouveau voyage</button>
+          <button class="btn-ghost" (click)="reset()">
+                        <mat-icon class="restore">restore</mat-icon>
+            </button>
         </div>
       </div>
 
@@ -322,4 +351,3 @@
     </div>
 
   </div>
-</div>

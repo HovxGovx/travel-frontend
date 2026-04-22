@@ -34,20 +34,20 @@ export class GenerateComponent implements OnInit {
   selectedCities: string[] = [];
 
   tripTypes = [
-    { value: 'nature',      label: 'Nature',      emoji: '🌿' },
-    { value: 'culture',     label: 'Culture',     emoji: '🏛️' },
-    { value: 'aventure',    label: 'Aventure',    emoji: '🧗' },
-    { value: 'gastronomie', label: 'Gastronomie', emoji: '🍽️' },
-    { value: 'famille',     label: 'Famille',     emoji: '👨‍👩‍👧' },
-    { value: 'plage',       label: 'Plage',       emoji: '🏖️' },
-    { value: 'luxe',        label: 'Luxe',        emoji: '💎' },
+    { value: 'nature',      label: 'Nature',      emoji: 'park' },
+    { value: 'culture',     label: 'Culture',     emoji: 'account_balance' },
+    { value: 'aventure',    label: 'Aventure',    emoji: 'hiking' },
+    { value: 'gastronomie', label: 'Gastronomie', emoji: 'restaurant' },
+    { value: 'famille',     label: 'Famille',     emoji: 'groups' },
+    { value: 'plage',       label: 'Plage',       emoji: 'beach_access' },
+    { value: 'luxe',        label: 'Luxe',        emoji: 'auto_awesome' },
   ];
 
   optimizeModes = [
-    { value: 'balanced', label: 'Équilibré',      emoji: '⚖️',  desc: 'Plaisir + budget + diversité' },
-    { value: 'pleasure', label: 'Max plaisir',    emoji: '😍',  desc: 'Les meilleures activités' },
-    { value: 'budget',   label: 'Économique',     emoji: '💰',  desc: 'Minimiser les dépenses' },
-    { value: 'cities',   label: 'Max villes',     emoji: '🗺️',  desc: 'Visiter le plus de villes' },
+    { value: 'balanced', label: 'Équilibré',      emoji: 'balance',  desc: 'Plaisir + budget + diversité' },
+    { value: 'pleasure', label: 'Max plaisir',    emoji: 'sentiment_very_satisfied',  desc: 'Les meilleures activités' },
+    { value: 'budget',   label: 'Économique',     emoji: 'payments',  desc: 'Minimiser les dépenses' },
+    { value: 'cities',   label: 'Max villes',     emoji: 'map',  desc: 'Visiter le plus de villes' },
   ];
 
   // Formulaire step 1
@@ -166,7 +166,7 @@ export class GenerateComponent implements OnInit {
       next: (trip) => {
         clearInterval(interval);
         this.progressValue = 100;
-        this.progressLabel = 'Itinéraire optimal trouvé ! ✅';
+        this.progressLabel = 'Itinéraire optimal trouvé ! ';
         setTimeout(() => {
           this.isGenerating  = false;
           this.generatedTrip = trip;

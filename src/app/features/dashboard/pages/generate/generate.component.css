@@ -387,6 +387,61 @@
 }
 
 /* // ── Step actions ────────────────────────────────────────────────────────── */
+/* Générer */
+.balance {
+  color: #7c3aed; /* violet premium / IA */
+}
+
+/* Équilibrer */
+.map, .calendar_month {
+  color: #2563eb; /* bleu stabilité / logique */
+}
+
+/* Max plaisir */
+.sentiment_very_satisfied {
+  color: #f59e0b; /* jaune/or plaisir */
+}
+
+/* Optimisation */
+.payments {
+  color: #10b981; /* vert performance / efficacité */
+}
+
+.type-emoji.park mat-icon {
+  color: #22c55e;
+  /* vert */
+}
+
+.type-emoji.account_balance mat-icon, .insigths {
+  color: #7c3aed;
+  /* violet */
+}
+
+.type-emoji.hiking mat-icon, .tune , .directions_car{
+  color: #f97316;
+  /* orange */
+}
+
+.type-emoji.restaurant mat-icon , .favorite{
+  color: #ef4444;
+  /* rouge */
+}
+
+.type-emoji.groups mat-icon , .restore, .location_city {
+  color: #3b82f6;
+  /* bleu */
+}
+
+.type-emoji.beach_access mat-icon {
+  color: #06b6d4;
+  /* turquoise */
+}
+
+.type-emoji.auto_awesome mat-icon {
+  color: #e3af5b;
+  /* gris */
+}
+
 .step-actions {
   display: flex;
   justify-content: space-between;

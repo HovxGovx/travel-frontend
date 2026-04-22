@@ -15,6 +15,12 @@ export const routes: Routes = [
         .then(m => m.LoginComponent)
   },
   {
+    path: 'travel-ai',
+    loadComponent: () =>
+      import('./features/public/pages/planner/planner.component')
+        .then(m => m.PlannerComponent)
+  },
+  {
     path: 'dashboard',
     component: DashboardLayoutComponent,
     canActivate: [authGuard],
@@ -55,6 +61,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/pages/generate/generate.component')
             .then(m => m.GenerateComponent)
+      },
+      {
+        path: 'algo-config',
+        loadComponent: () =>
+          import('./features/dashboard/pages/algo-config/algo-config.component')
+            .then(m => m.AlgoConfigComponent)
       }
     ]
   },
